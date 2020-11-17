@@ -5,7 +5,7 @@ class Environment:
     def __init__(self,
         optimal_temperature = (18.0, 24.0),
                 initial_month = 0,
-                initial_number_users = 10,
+                initial_ram = 10,
                 initial_rate_data=60
     ):
 
@@ -16,20 +16,20 @@ class Environment:
         self.optimal_temperature = optimal_temperature
         self.min_temperature = -20
         self.max_temperature = 80
-        self.min_number_users = 10
-        self.max_number_users = 100
-        self.max_update_users = 5
+        self.min_ram = 10
+        self.max_ram = 100
+        self.max_update_ram = 5
 
         self.min_rate_data = 20
         self.max_rate_data = 300
         self.max_update_data = 10
 
-        self.initial_number_users = initial_number_users
-        self.current_number_users = initial_number_users
+        self.initial_ram = initial_ram
+        self.current_ram = initial_ram
         self.initial_rate_data = initial_rate_data
 
         self.current_rate_data = initial_rate_data
-        self.intrinsic_temperature = self.atmospheric_temperature + 1.25 * self.current_number_users+ 1.25 * self.current_rate_data
+        self.intrinsic_temperature = self.atmospheric_temperature + 1.25 * self.current_ram+ 1.25 * self.current_rate_data
         
         self.temperature_ai = self.intrinsic_temperature
 
@@ -56,12 +56,12 @@ class Environment:
 
         self.atmospheric_temperature = self.monthly_atmospheric_temperatures[month]
 
-        self.current_number_users += np.random.randint(-self.max_update_users,self.max_update_users)
+        self.current_ram += np.random.randint(-self.max_update_ram,self.max_update_ram)
 
-        if (self.current_number_users > self.max_number_users):
-            self.current_number_users = self.max_number_users
-        elif (self.current_number_users < self.min_number_users):
-            self.current_number_users = self.min_number_users
+        if (self.current_ram > self.max_ram):
+            self.current_ram = self.max_ram
+        elif (self.current_ram < self.min_ram):
+            self.current_ram = self.min_ram
 
 
         self.current_rate_data += np.random.randint(-self.max_update_data,self.max_update_data)
@@ -72,7 +72,7 @@ class Environment:
 
         past_intrinsic_temperature = self.intrinsic_temperature
 
-        self.intrinsic_temperature = self.atmospheric_temperature + 1.25 * self.current_number_users + 1.25 * self.current_rate_data
+        self.intrinsic_temperature = self.atmospheric_temperature + 1.25 * self.current_ram + 1.25 * self.current_rate_data
 
         delta_intrinsic_temperature = self.intrinsic_temperature - past_intrinsic_temperature
 
@@ -106,7 +106,7 @@ class Environment:
 
         scaled_temperature_ai = (self.temperature_ai - self.min_temperature)/ (self.max_temperature - self.min_temperature)
 
-        scaled_number_users = (self.current_number_users - self.min_number_users)/ (self.max_number_users - self.min_number_users)
+        scaled_number_users = (self.current_ram - self.min_ram)/ (self.max_ram - self.min_ram)
         
         scaled_rate_data = (self.current_rate_data - self.min_rate_data)/ (self.max_rate_data - self.min_rate_data)
 
@@ -118,9 +118,9 @@ class Environment:
     def reset(self, new_month):
         self.atmospheric_temperature = self.monthly_atmospheric_temperatures[new_month]
         self.initial_month = new_month
-        self.current_number_users = self.initial_number_users
+        self.current_ram = self.initial_ram
         self.current_rate_data = self.initial_rate_data
-        self.intrinsic_temperature = self.atmospheric_temperature + 1.25 * self.current_number_users + 1.25 * self.current_rate_data
+        self.intrinsic_temperature = self.atmospheric_temperature + 1.25 * self.current_ram + 1.25 * self.current_rate_data
         self.temperature_ai = self.intrinsic_temperature
         self.temperature_noai = (self.optimal_temperature[0] + self.optimal_temperature[1]) / 2.0
         self.total_energy_ai = 0.0
@@ -132,7 +132,7 @@ class Environment:
     def observe(self):
         
         scaled_temperature_ai = (self.temperature_ai - self.min_temperature)/ (self.max_temperature - self.min_temperature)
-        scaled_number_users = (self.current_number_users - self.min_number_users)/ (self.max_number_users - self.min_number_users)
+        scaled_number_users = (self.current_ram - self.min_ram)/ (self.max_ram - self.min_ram)
         scaled_rate_data = (self.current_rate_data - self.min_rate_data)/ (self.max_rate_data - self.min_rate_data)
         current_state = np.matrix([scaled_temperature_ai,scaled_number_users,scaled_rate_data])
         
